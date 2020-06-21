@@ -1,28 +1,33 @@
 package io.edwardjoyce.base.commandline;
 
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.logging.Logger;
+import java.util.stream.Stream;
 
-import static org.mockito.Mockito.verify;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(MockitoExtension.class)
-public class LoggingServiceTest {
+public class EchoServiceTest {
 
     @InjectMocks
-    private LoggingService loggingService;
+    private EchoService echoService;
 
-    @Mock
-    private Logger logger;
+    private static Stream<Arguments> dataForShouldEcho() {
+        return Stream.of(
+                Arguments.of("input", "input input"),
+                Arguments.of("", ""),
+                Arguments.of("  ", ""),
+                Arguments.of(null, ""));
+    }
 
-    @Test
-    public void testApp() {
-        String input = "input";
-        loggingService.log(input);
-        verify(logger).info(input);
+    @ParameterizedTest
+    @MethodSource(value = "dataForShouldEcho")
+    public void testApp(final String input, final String expectedOutput) {
+        assertThat(echoService.echo(input)).isEqualTo(expectedOutput);
     }
 }
